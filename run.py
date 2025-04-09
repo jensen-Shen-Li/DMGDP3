@@ -344,7 +344,7 @@ def train_agent(env, state_dim, action_dim, max_action, device, output_dir, args
         target_kl=args.target_kl,
         LA_max=args.lambda_max,
         LA_min=args.lambda_min,
-        kl_alpha = args.kl_alpha,
+        kl_lambda = args.kl_lambda,
         mle_beta = args.mle_beta,
         gama = args.gama,
         f_div=args.f_div
@@ -364,7 +364,7 @@ def train_agent(env, state_dim, action_dim, max_action, device, output_dir, args
     current_time = datetime.now().strftime("%H:%M:%S")
     print("Current time:", current_time)
     utils.print_banner(f"Parameters", separator="*", num_star=30)
-    print("kl_alpha", args.kl_alpha)
+    print("kl_lambda", args.kl_lambda)
     print("mle_beta", args.mle_beta)
     print("gama", args.gama)
     print("seed", args.seed)
@@ -436,7 +436,7 @@ def train_agent(env, state_dim, action_dim, max_action, device, output_dir, args
         "best normalized score std": scores[best_id, 3],
         "best raw score avg": scores[best_id, 0],
         "best raw score std": scores[best_id, 1],
-        "best_kl_alpha": args.kl_alpha,
+        "best_kl_lambda": args.kl_lambda,
         "best_mle_beta": args.mle_beta,
         "best_gama":args.gama,
         "best_seed":args.seed,
@@ -523,7 +523,7 @@ if __name__ == "__main__":
     parser.add_argument("--lambda_min", default=0, type=float)
 
     # gen params
-    parser.add_argument("--kl_alpha", default=0.05, type=float)
+    parser.add_argument("--kl_lambda", default=0.05, type=float)
     parser.add_argument("--mle_beta", default=0.05, type=float)
     parser.add_argument("--dis_lr", default=3e-5, type=float)
     parser.add_argument("--gama", default=0.01, type=float)
@@ -557,7 +557,7 @@ if __name__ == "__main__":
     # utils.make_dir(work_dir)
     ts = time.gmtime()
     ts = time.strftime("%m-%d-%H-%M", ts)
-    exp_name = str(args.env_name) + '-' + ts + '-bs' + str(args.batch_size) + '-s' + str(args.seed) + '-a' + str(args.kl_alpha) + '-b' + str(args.mle_beta) + '-g' + str(args.gama) + '-gans' + str(args.f_div) + '-T' + str(args.T)
+    exp_name = str(args.env_name) + '-' + ts + '-bs' + str(args.batch_size) + '-s' + str(args.seed) + '-a' + str(args.kl_lambda) + '-b' + str(args.mle_beta) + '-g' + str(args.gama) + '-gans' + str(args.f_div) + '-T' + str(args.T)
     exp_name += '-' + cooldir
     work_dir = work_dir + '/' + exp_name
     # Setup Logging 

@@ -107,7 +107,7 @@ class DiffpoGAN(object):
             target_kl=0.05,
             LA_max=100,
             LA_min=0,
-            kl_alpha = 0.05,
+            kl_lambda = 0.05,
             mle_beta = 0.05,
             gama = 0.01,
             dis_lr=3e-5,
@@ -175,7 +175,7 @@ class DiffpoGAN(object):
         self.dis_loss = torch.nn.BCELoss(reduction='mean')
         self.warm_start_epochs = 40
         self.real_data_pct = 0.05
-        self.kl_alpha = kl_alpha
+        self.kl_lambda = kl_lambda
         self.mle_beta = mle_beta
         self.gama = gama
         self.f_div=f_div
@@ -429,7 +429,7 @@ class DiffpoGAN(object):
 
                 actor_loss = (
 
-                    (c_fake_ac.mean()/real_ac.mean()).detach() * (self.kl_alpha * kl_loss) + q_loss + torch.log(generator_loss)*self.gama
+                    (c_fake_ac.mean()/real_ac.mean()).detach() * (self.kl_lambda * kl_loss) + q_loss + torch.log(generator_loss)*self.gama
 
                 )
                 
@@ -463,7 +463,7 @@ class DiffpoGAN(object):
                 metric["discriminator_loss"].append(discriminator_loss.item())
                 metric["mlt"].append((c_fake_ac.mean()/real_ac.mean()).item())
                 metric["mlt_fix"].append(((c_fake_ac.mean()/real_ac.mean()).clamp(self.LA_min, self.LA_max)).item())
-                metric["mltall"].append((c_fake_ac.mean()/real_ac.mean()*self.kl_alpha).item())
+                metric["mltall"].append((c_fake_ac.mean()/real_ac.mean()*self.kl_lambda).item())
                 metric["q_loss"].append((q_loss).item())
                 metric["gen_loss"].append((generator_loss).item())
                 metric["log_li"].append(log_li.item())
