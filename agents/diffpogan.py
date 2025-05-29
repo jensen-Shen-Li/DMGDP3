@@ -112,6 +112,7 @@ class DiffpoGAN(object):
             gama = 0.01,
             dis_lr=3e-5,
             f_div="wgan",
+            early_stop=False,
     ):
         self.model = MLP(state_dim=state_dim, action_dim=action_dim, device=device)
         self.flow = NICE(xdim=state_dim + action_dim, mask_type='checkerboard0', no_of_layers=4,)
@@ -178,7 +179,8 @@ class DiffpoGAN(object):
         self.kl_lambda = kl_lambda
         self.mle_beta = mle_beta
         self.gama = gama
-        self.f_div=f_div
+        self.f_div = f_div
+        self.early_stop = early_stop
         self.prior = "logistic"
         self.flow_optimizer = torch.optim.Adam(self.flow.parameters(), lr=1e-4, betas=(0.9,0.01), eps=1e-4,)
 
@@ -187,7 +189,7 @@ class DiffpoGAN(object):
             return
         self.ema.update_model_average(self.ema_model, self.actor)
 
-    def train(self, replay_buffer, iterations, batch_size=100, log_writer=None):
+    def train(self, replay_buffer, iterations, training_iters, batch_size=100, log_writer=None):
         metric = {
             "kl_loss": [],
             # "ql_loss": [],
@@ -218,6 +220,8 @@ class DiffpoGAN(object):
         warm_start = _n_epochs <= self.warm_start_epochs
         for _ in range(iterations):
             # Sample replay buffer / batch
+            if self.early_stop and training_iters>600000:
+                self.kl_lambda = 0
             state, action, next_state, reward, not_done = replay_buffer.sample(
                 batch_size
             )

@@ -26,6 +26,7 @@ hyperparameters = {
         "lambda_min": 0,
         "target_kl": 0.06,
         "gn": 9.0,
+        "early_stop": True
     },
     "hopper-medium-v2": {
         "lr": 3e-4,
@@ -62,6 +63,7 @@ hyperparameters = {
         "target_kl": 0.06,
         "gn": 2.0,
         "freq": 2,
+        "early_stop": True
     },
     "hopper-medium-replay-v2": {
         "lr": 3e-4,
@@ -347,7 +349,8 @@ def train_agent(env, state_dim, action_dim, max_action, device, output_dir, args
         kl_lambda = args.kl_lambda,
         mle_beta = args.mle_beta,
         gama = args.gama,
-        f_div=args.f_div
+        f_div=args.f_div,
+        early_stop=args.early_stop
     )
 
     early_stop = False
@@ -378,7 +381,9 @@ def train_agent(env, state_dim, action_dim, max_action, device, output_dir, args
         loss_metric = agent.train(
             data_sampler,
             iterations=iterations,
+            training_iters=training_iters,
             batch_size=args.batch_size,
+            
             # log_writer=writer,
         )
         training_iters += iterations
@@ -529,6 +534,7 @@ if __name__ == "__main__":
     parser.add_argument("--gama", default=0.01, type=float)
 
     parser.add_argument("--f_div", default="wgan", type=str)
+    parser.add_argument("--early_stop", default=False, type=bool)
 
     args = parser.parse_args()
     args.device = f"cuda:{args.device}" if torch.cuda.is_available() else "cpu"
