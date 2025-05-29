@@ -553,6 +553,7 @@ if __name__ == "__main__":
     # default kl, comment it when you set yourself kl parameters
     args.lambda_min = hyperparameters[args.env_name]["lambda_min"]
     args.target_kl = hyperparameters[args.env_name]["target_kl"]
+    args.early_stop = hyperparameters[args.env_name]["early_stop"]
 
     # loggg&result
     # Build work dir
